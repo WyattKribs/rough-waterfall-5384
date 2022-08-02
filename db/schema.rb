@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_07_25_163851) do
+ActiveRecord::Schema.define(version: 2022_08_02_202552) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 2022_07_25_163851) do
     t.bigint "supermarket_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "item_id"
+    t.index ["item_id"], name: "index_customers_on_item_id"
     t.index ["supermarket_id"], name: "index_customers_on_supermarket_id"
   end
 
@@ -46,11 +48,22 @@ ActiveRecord::Schema.define(version: 2022_07_25_163851) do
     t.index ["department_id"], name: "index_employees_on_department_id"
   end
 
+  create_table "items", force: :cascade do |t|
+    t.string "name"
+    t.integer "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "customers_id"
+    t.index ["customers_id"], name: "index_items_on_customers_id"
+  end
+
   create_table "supermarkets", force: :cascade do |t|
     t.string "name"
     t.string "location"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "item_id"
+    t.index ["item_id"], name: "index_supermarkets_on_item_id"
   end
 
   create_table "tickets", force: :cascade do |t|
@@ -60,8 +73,11 @@ ActiveRecord::Schema.define(version: 2022_07_25_163851) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "customers", "items"
   add_foreign_key "customers", "supermarkets"
   add_foreign_key "employee_tickets", "employees"
   add_foreign_key "employee_tickets", "tickets"
   add_foreign_key "employees", "departments"
+  add_foreign_key "items", "customers", column: "customers_id"
+  add_foreign_key "supermarkets", "items"
 end
